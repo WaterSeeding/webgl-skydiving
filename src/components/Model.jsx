@@ -16,27 +16,26 @@ export const Model = () => {
         baseColor.flipY = roughness.flipY = metallic.flipY = normal.flipY = clothes.flipY = false;
       }
     );
-  const test = useGLTF("/skydiver.glb");
   const { nodes, animations, scene } = useGLTF("/skydiver.glb");
   const { ref, actions, names } = useAnimations(animations, scene);
   const { mixamorigHips, skydiver_2: skydiver } = nodes;
   const onBeforeCompile = shader => {
     Object.assign(shader.uniforms, { ...skydiver.material.uniforms });
     shader.vertexShader = `
-        uniform float uTime;
-        uniform sampler2D uClothes;
-        ${shader.vertexShader}
-        `;
+    uniform float uTime;
+    uniform sampler2D uClothes;
+    ${shader.vertexShader}
+    `;
     shader.vertexShader = shader.vertexShader.replace(
       `#include <begin_vertex>`,
       `
-          vec3 clothesTexture = vec3(texture2D(uClothes, vUv));
-          float circleTime = 2.0;
-          float amplitude = 30.0;
-          float circleTimeParam = mod(uTime, circleTime);
-          vec3 transformed = vec3( position );
-          transformed.y += min(clothesTexture.y * sin( circleTimeParam * amplitude * (PI  / circleTime)) * 0.025, 0.5);
-        `
+        vec3 clothesTexture = vec3(texture2D(uClothes, vUv));
+        float circleTime = 2.0;
+        float amplitude = 30.0;
+        float circleTimeParam = mod(uTime, circleTime);
+        vec3 transformed = vec3( position );
+        transformed.y += min(clothesTexture.y * sin( circleTimeParam * amplitude * (PI  / circleTime)) * 0.025, 0.5);
+      `
     );
   };
   useEffect(() => {
